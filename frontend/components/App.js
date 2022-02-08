@@ -43,7 +43,6 @@ export default class App extends React.Component {
 
   componentDidMount() {
     axios.get(`http://localhost:9000/api/todos`).then((resp) => {
-      console.log(resp.data.data);
       this.setState({
         ...this.state,
         todos: resp.data.data,
@@ -68,7 +67,7 @@ export default class App extends React.Component {
       .then((resp) => {
         this.setState({
           ...this.state,
-          todos: [...resp.data.data, newTodo],
+          todos: [...this.state.todos, resp.data.data],
         });
       })
       .catch((err) => {
@@ -104,6 +103,7 @@ export default class App extends React.Component {
   };
 
   render() {
+    console.log(this.state);
     const { todos } = this.state;
     return (
       <div>
