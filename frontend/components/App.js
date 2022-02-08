@@ -1,6 +1,7 @@
 import React from "react";
 import TodoList from "./TodoList";
 import Form from "./Form";
+import axios from "axios";
 
 // const initialState = {
 //   task: "",
@@ -8,23 +9,47 @@ import Form from "./Form";
 //   completed: false,
 // };
 
-const initialState = {
-  todos: [
-    {
-      task: "Organize Garage",
-      id: 1528817077286,
-      completed: false,
-    },
-    {
-      task: "Bake Cookies",
-      id: 1528817084358,
-      completed: false,
-    },
-  ],
-};
+// const initialState = {
+//   message: "Here are your Todos",
+//   data: [
+//     {
+//       id: "EdEjX",
+//       name: "laundry",
+//       completed: false,
+//     },
+//     {
+//       id: "js-Dw",
+//       name: "dishes",
+//       completed: false,
+//     },
+//     {
+//       id: "o2vnp",
+//       name: "groceries",
+//       completed: true,
+//     },
+//   ],
+// };
 
 export default class App extends React.Component {
-  state = initialState;
+  state = {
+    todos: [
+      {
+        id: Math.floor(Math.random() * 1000000000000),
+        name: "",
+        completed: false,
+      },
+    ],
+  };
+
+  componentDidMount() {
+    axios.get(`http://localhost:9000/api/todos`).then((resp) => {
+      console.log(resp.data.data);
+      this.setState({
+        ...this.state,
+        todos: resp.data.data,
+      });
+    });
+  }
 
   // handleChange = (event) => {
   //   event.preventDefault();
@@ -32,13 +57,23 @@ export default class App extends React.Component {
   //   this.setState({ ...this.state, [id]: value });
   // };
 
-  handleAdd = (task) => {
+  handleAdd = (name) => {
     const newTodo = {
-      task: task,
       id: Math.floor(Math.random() * 1000000000000),
+      name: name,
       completed: false,
     };
-    this.setState({ ...this.state, todos: [...this.state.todos, newTodo] });
+    axios
+      .post(`http://localhost:9000/api/todos`, newTodo)
+      .then((resp) => {
+        this.setState({
+          ...this.state,
+          todos: [...resp.data.data, newTodo],
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   handleClear = () => {
@@ -51,17 +86,20 @@ export default class App extends React.Component {
   };
 
   handleToggle = (clickedId) => {
-    this.setState({
-      ...this.state,
-      todos: this.state.todos.map((todo) => {
-        if (todo.id === clickedId) {
-          return {
-            ...todo,
-            completed: !todo.completed,
-          };
-        }
-        return todo;
-      }),
+    axios.patch(`http://localhost:9000/api/todos/${clickedId}`).then((resp) => {
+      console.log(resp.data.data);
+      this.setState({
+        ...this.state,
+        todos: this.state.todos.map((todo) => {
+          if (todo.id === clickedId) {
+            return {
+              ...todo,
+              completed: !todo.completed,
+            };
+          }
+          return todo;
+        }),
+      });
     });
   };
 

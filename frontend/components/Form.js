@@ -20,9 +20,9 @@ export default class Form extends React.Component {
       <form>
         <input
           onChange={this.handleChange}
-          // id="task"
-          // type="text"
-          // placeholder="type text"
+          id="task"
+          type="text"
+          placeholder="type text"
           // value={this.props.todos.task}
         />
         <button onClick={this.handleSubmit}>Add ToDo</button>
